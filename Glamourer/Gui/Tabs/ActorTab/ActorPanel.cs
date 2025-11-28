@@ -2,7 +2,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.ImGuiNotification;
 using Dalamud.Plugin.Services;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using Glamourer.Automation;
 using Glamourer.Designs;
 using Glamourer.Designs.History;
@@ -227,7 +226,7 @@ public class ActorPanel
 
         var mainhand = EquipDrawData.FromState(_stateManager, _state, EquipSlot.MainHand);
         var offhand  = EquipDrawData.FromState(_stateManager, _state, EquipSlot.OffHand);
-        _equipmentDrawer.DrawWeapons(mainhand, offhand, GameMain.IsInGPose());
+        _equipmentDrawer.DrawWeapons(mainhand, offhand, true);
 
         foreach (var slot in BonusExtensions.AllFlags)
         {
