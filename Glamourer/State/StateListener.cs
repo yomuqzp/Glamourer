@@ -374,26 +374,8 @@ public class StateListener : IDisposable
             case UpdateState.NoChange: apply = true; break;
         }
 
-        var baseType  = slot is EquipSlot.OffHand ? state.BaseData.MainhandType.Offhand() : state.BaseData.MainhandType;
-        var modelType = state.ModelData.Item(slot).Type;
         if (apply)
-        {
-            // Only allow overwriting identical weapons
-            var canApply = baseType == modelType
-             || _gPose.InGPose && actor.IsGPoseOrCutscene;
-            var newWeapon = state.ModelData.Weapon(slot);
-            if (canApply)
-            {
-                weapon = newWeapon;
-            }
-            else
-            {
-                if (weapon.Skeleton.Id != 0)
-                    weapon = weapon.With(newWeapon.Stains);
-                // Force unlock if necessary.
-                _manager.ChangeItem(state, slot, state.BaseData.Item(slot), ApplySettings.Game with { Key = state.Combination });
-            }
-        }
+            weapon = state.ModelData.Weapon(slot);
 
         // Fist Weapon Offhand hack.
         if (slot is EquipSlot.MainHand && weapon.Skeleton.Id is > 1600 and < 1651)

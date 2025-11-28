@@ -131,21 +131,6 @@ public class InternalStateEditor(
         if (!state.CanUnlock(key))
             return false;
 
-        // Can not change weapon type from expected type in state.
-        if (slot is EquipSlot.MainHand && item.Type != state.BaseData.MainhandType
-         || slot is EquipSlot.OffHand && item.Type != state.BaseData.OffhandType)
-        {
-            if (!gPose.InGPose)
-                return false;
-
-            var old = oldItem;
-            gPose.AddActionOnLeave(() =>
-            {
-                if (old.Type == state.BaseData.Item(slot).Type)
-                    ChangeItem(state, slot, old, state.Sources[slot, false], out _, key);
-            });
-        }
-
         state.ModelData.SetItem(slot, item);
         state.Sources[slot, false] = source;
         return true;
@@ -171,22 +156,6 @@ public class InternalStateEditor(
         oldStains = state.ModelData.Stain(slot);
         if (!state.CanUnlock(key))
             return false;
-
-        // Can not change weapon type from expected type in state.
-        if (slot is EquipSlot.MainHand && item.Type != state.BaseData.MainhandType
-         || slot is EquipSlot.OffHand && item.Type != state.BaseData.OffhandType)
-        {
-            if (!gPose.InGPose)
-                return false;
-
-            var old  = oldItem;
-            var oldS = oldStains;
-            gPose.AddActionOnLeave(() =>
-            {
-                if (old.Type == state.BaseData.Item(slot).Type)
-                    ChangeEquip(state, slot, old, oldS, state.Sources[slot, false], out _, out _, key);
-            });
-        }
 
         state.ModelData.SetItem(slot, item);
         state.ModelData.SetStain(slot, stains);
