@@ -23,17 +23,11 @@ public readonly struct WeaponList
             _list.Add(type, list);
         }
 
-        var existingFlags  = list.Count == 0 ? 0 : list.Select(t => t.Item3).Aggregate((t, existing) => t | existing);
-        var remainingFlags = flags & ~existingFlags;
-
-        if (remainingFlags == 0)
-            return false;
-
-        list.Add((item, source, remainingFlags));
+        list.Add((item, source, flags));
         return true;
     }
 
-    public bool TryGet(FullEquipType type, JobId id, bool gameStateAllowed, out (EquipItem, StateSource) ret)
+    public bool TryGet(FullEquipType type, JobId _, bool gameStateAllowed, out (EquipItem, StateSource) ret)
     {
         if (!_list.TryGetValue(type, out var list))
         {
@@ -41,11 +35,9 @@ public readonly struct WeaponList
             return false;
         }
 
-        var flag = (JobFlag)(1ul << id.Id);
-
-        foreach (var (item, source, flags) in list)
+        foreach (var (item, source, _) in list)
         {
-            if (flags.HasFlag(flag) && (gameStateAllowed || source is not StateSource.Game))
+            if (gameStateAllowed || source is not StateSource.Game)
             {
                 ret = (item, source);
                 return true;
