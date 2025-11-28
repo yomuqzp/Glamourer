@@ -362,14 +362,20 @@ public class StateEditor(
                         });
                     }
 
-                    var currentType = state.BaseData.Item(weaponSlot).Type;
-                    if (mergedDesign.Weapons.TryGet(currentType, state.LastJob, true, out var weapon))
+                    var requestedWeapon = mergedDesign.Design.DesignData.Item(weaponSlot);
+                    if (!mergedDesign.Weapons.TryGet(requestedWeapon.Type, state.LastJob, true, out var weapon))
                     {
-                        var source = settings.UseSingleSource ? settings.Source :
-                            weapon.Item2 is StateSource.Game  ? StateSource.Game : settings.Source;
-                        Editor.ChangeItem(state, weaponSlot, weapon.Item1, source, out _,
-                            settings.Key);
+                        // Fall back to the base weapon type if the merged list does not contain the requested type.
+                        mergedDesign.Weapons.TryGet(state.BaseData.Item(weaponSlot).Type, state.LastJob, true, out weapon);
                     }
+
+                    var weaponToApply = weapon.Item1.Valid ? weapon.Item1 : requestedWeapon;
+                    var source        = settings.UseSingleSource
+                        ? settings.Source
+                        : weapon.Item2 is StateSource.Game
+                            ? StateSource.Game
+                            : settings.Source;
+                    Editor.ChangeItem(state, weaponSlot, weaponToApply, source, out _, settings.Key);
                 }
             }
 
